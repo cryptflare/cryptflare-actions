@@ -9,3 +9,8 @@ pnpm-lock.yaml
 
 # Don't reformat the licenses file emitted by ncc
 **/licenses.txt
+
+# release-please owns CHANGELOG.md - any reformat would conflict with
+# its template and break the next Release PR.
+CHANGELOG.md
+.release-please-manifest.json
