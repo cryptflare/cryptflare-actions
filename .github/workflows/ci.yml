@@ -21,7 +21,7 @@ jobs:
         uses: reviewdog/action-actionlint@v1
         with:
           reporter: github-pr-check
-          fail_on_error: true
+          fail_level: error
 
       - name: Validate every action.yml against the GitHub schema
         uses: mpalmer/action-validator@v0.6.0
@@ -38,8 +38,6 @@ jobs:
           fetch-depth: 0
 
       - uses: pnpm/action-setup@v4
-        with:
-          version: 9
 
       - uses: actions/setup-node@v4
         with:
@@ -62,8 +60,6 @@ jobs:
       - uses: actions/checkout@v4
 
       - uses: pnpm/action-setup@v4
-        with:
-          version: 9
 
       - uses: actions/setup-node@v4
         with:
@@ -96,8 +92,6 @@ jobs:
       - uses: actions/checkout@v4
 
       - uses: pnpm/action-setup@v4
-        with:
-          version: 9
 
       - uses: actions/setup-node@v4
         with:
