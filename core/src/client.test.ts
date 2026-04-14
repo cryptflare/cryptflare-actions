@@ -134,6 +134,27 @@ describe('CryptflareClient', () => {
     );
   });
 
+  it('builds an error even when response.text() itself rejects', async () => {
+    // Simulates a corrupted response body or a fetch implementation that
+    // fails to decode mid-read. Hits the .catch(() => '') fallback in
+    // buildApiError, so the client surfaces a CryptflareApiError instead
+    // of bubbling the raw text() rejection.
+    fetchMock.mockResolvedValueOnce({
+      ok: false,
+      status: 502,
+      statusText: 'Bad Gateway',
+      headers: new Headers(),
+      text: () => Promise.reject(new Error('body decode failed')),
+    } as unknown as Response);
+
+    const client = new CryptflareClient({ baseUrl: 'https://api.cryptflare.com', token: 'cf_tok' });
+    await expect(client.get('/v1/secrets')).rejects.toMatchObject({
+      name: 'CryptflareApiError',
+      status: 502,
+      message: expect.stringContaining('502'),
+    });
+  });
+
   it('throws a descriptive error for invalid JSON in a 2xx response', async () => {
     fetchMock.mockResolvedValueOnce(new Response('{not json', { status: 200 }));
     const client = new CryptflareClient({ baseUrl: 'https://api.cryptflare.com', token: 'cf_tok' });
