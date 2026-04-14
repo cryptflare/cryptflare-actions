@@ -33,5 +33,5 @@ outputs:
     description: 'Comma-separated list of permissions (scopes) granted to the token.'
 
 runs:
-  using: 'node20'
+  using: 'node24'
   main: 'login/dist/index.js'

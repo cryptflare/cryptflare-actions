@@ -96,20 +96,21 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      # Suppress workflow-command annotations for the negative tests below.
+      # The action's core.setFailed() emits ::error:: which would otherwise
+      # show up as red annotations on the run, even though we expect those
+      # failures. ::stop-commands::<token> tells the runner to ignore all
+      # workflow commands until it sees ::<token>::. Step exit codes still
+      # happen, so continue-on-error + outcome checks still work.
+      - name: Suppress workflow commands during negative tests
+        run: echo "::stop-commands::cryptflare-smoke-suppress"
+
       - name: Login with malformed token (must fail)
         id: bad-prefix
         continue-on-error: true
         uses: ./
         with:
           api-token: 'notacryptflaretoken'
-
-      - name: Verify malformed-token step failed
-        run: |
-          if [ "${{ steps.bad-prefix.outcome }}" != "failure" ]; then
-            echo "::error::Login should have failed with a malformed token, got outcome '${{ steps.bad-prefix.outcome }}'"
-            exit 1
-          fi
-          echo "Confirmed: malformed token rejected"
 
       - name: Login with syntactically valid but unknown token (must fail)
         id: bad-auth
@@ -118,10 +119,19 @@ jobs:
         with:
           api-token: 'cf_smoketest_definitely_not_a_real_token_0123456789'
 
-      - name: Verify unknown-token step failed
+      - name: Resume workflow commands
+        run: echo "::cryptflare-smoke-suppress::"
+
+      - name: Verify both negative tests failed as expected
         run: |
+          set -e
+          if [ "${{ steps.bad-prefix.outcome }}" != "failure" ]; then
+            echo "::error::Login should have failed with a malformed token, got outcome '${{ steps.bad-prefix.outcome }}'"
+            exit 1
+          fi
           if [ "${{ steps.bad-auth.outcome }}" != "failure" ]; then
             echo "::error::Login should have failed with an unknown token, got outcome '${{ steps.bad-auth.outcome }}'"
             exit 1
           fi
-          echo "Confirmed: unknown token rejected by API"
+          echo "Confirmed: malformed token rejected (local prefix check)"
+          echo "Confirmed: unknown token rejected (API auth check)"

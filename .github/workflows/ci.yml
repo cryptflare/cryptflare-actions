@@ -31,12 +31,13 @@ jobs:
           reporter: github-pr-check
           fail_level: error
 
-      - name: Validate every action.yml against the GitHub schema
-        uses: mpalmer/action-validator@v0.9.0
-        with:
-          patterns: |
-            action.yml
-            actions/*/action.yml
+      # NOTE: mpalmer/action-validator was removed because its bundled JSON
+      # schema (as of v0.9.0) does not yet recognise runs.using: node24,
+      # which is required to silence the Node 20 deprecation warning
+      # (https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/).
+      # Re-add when a release ships an updated schema. actionlint above
+      # still validates action.yml syntax and workflow correctness; the
+      # runner itself rejects malformed action.yml at action-load time.
 
   commitlint:
     name: Lint commit messages
