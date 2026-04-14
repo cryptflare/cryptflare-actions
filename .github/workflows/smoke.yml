@@ -89,49 +89,15 @@ jobs:
           fi
           echo "Confirmed: env vars not exported"
 
-  bad-token:
-    name: Login (bad tokens rejected)
-    runs-on: ubuntu-latest
-    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
-    steps:
-      - uses: actions/checkout@v6
-
-      # Suppress workflow-command annotations for the negative tests below.
-      # The action's core.setFailed() emits ::error:: which would otherwise
-      # show up as red annotations on the run, even though we expect those
-      # failures. ::stop-commands::<token> tells the runner to ignore all
-      # workflow commands until it sees ::<token>::. Step exit codes still
-      # happen, so continue-on-error + outcome checks still work.
-      - name: Suppress workflow commands during negative tests
-        run: echo "::stop-commands::cryptflare-smoke-suppress"
-
-      - name: Login with malformed token (must fail)
-        id: bad-prefix
-        continue-on-error: true
-        uses: ./
-        with:
-          api-token: 'notacryptflaretoken'
-
-      - name: Login with syntactically valid but unknown token (must fail)
-        id: bad-auth
-        continue-on-error: true
-        uses: ./
-        with:
-          api-token: 'cf_smoketest_definitely_not_a_real_token_0123456789'
-
-      - name: Resume workflow commands
-        run: echo "::cryptflare-smoke-suppress::"
-
-      - name: Verify both negative tests failed as expected
-        run: |
-          set -e
-          if [ "${{ steps.bad-prefix.outcome }}" != "failure" ]; then
-            echo "::error::Login should have failed with a malformed token, got outcome '${{ steps.bad-prefix.outcome }}'"
-            exit 1
-          fi
-          if [ "${{ steps.bad-auth.outcome }}" != "failure" ]; then
-            echo "::error::Login should have failed with an unknown token, got outcome '${{ steps.bad-auth.outcome }}'"
-            exit 1
-          fi
-          echo "Confirmed: malformed token rejected (local prefix check)"
-          echo "Confirmed: unknown token rejected (API auth check)"
+# NOTE: A 'bad-token' job that exercised malformed and unknown tokens
+# used to live here. It was removed because:
+#   1. core.setFailed() messages are recorded as run annotations by the
+#      runner independently of the ::stop-commands:: workflow-command
+#      parser, so there is no workflow-side way to suppress them. Every
+#      run produced two red error annotations even though the failures
+#      were expected.
+#   2. Smoke tests should verify the action works, not probe its failure
+#      modes. The cf_ prefix check is a single if statement in inputs.ts
+#      and the 401 handling is one throw in client.ts; both are trivial
+#      to unit-test against a mocked module. Move those negative cases
+#      into login/src/*.test.ts when login gets its own vitest suite.
