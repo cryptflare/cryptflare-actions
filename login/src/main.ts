@@ -48,7 +48,10 @@ export async function run(): Promise<void> {
     if (inputs.exportEnv) {
       core.exportVariable('CRYPTFLARE_TOKEN', inputs.token);
       core.exportVariable('CRYPTFLARE_API_URL', inputs.apiUrl);
-      core.info('Exported CRYPTFLARE_TOKEN and CRYPTFLARE_API_URL for subsequent steps.');
+      core.exportVariable('CRYPTFLARE_ORG_ID', identity.organisation.id);
+      core.info(
+        'Exported CRYPTFLARE_TOKEN, CRYPTFLARE_API_URL, and CRYPTFLARE_ORG_ID for subsequent steps.',
+      );
     }
   } catch (error) {
     core.setFailed(`CryptFlare login failed: ${errorMessage(error)}`);

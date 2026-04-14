@@ -31094,7 +31094,8 @@ async function run() {
         if (inputs.exportEnv) {
             exportVariable('CRYPTFLARE_TOKEN', inputs.token);
             exportVariable('CRYPTFLARE_API_URL', inputs.apiUrl);
-            info('Exported CRYPTFLARE_TOKEN and CRYPTFLARE_API_URL for subsequent steps.');
+            exportVariable('CRYPTFLARE_ORG_ID', identity.organisation.id);
+            info('Exported CRYPTFLARE_TOKEN, CRYPTFLARE_API_URL, and CRYPTFLARE_ORG_ID for subsequent steps.');
         }
     }
     catch (error) {
