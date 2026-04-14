@@ -1,0 +1,127 @@
+name: Smoke
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: smoke-${{ github.ref }}
+  cancel-in-progress: true
+
+# Force all JavaScript actions to run on Node 24 ahead of GitHub's
+# June 2026 default flip.
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+
+jobs:
+  # Skip on PRs from forks - secrets are not available to fork PRs and the
+  # action cannot be exercised against the API without a real token.
+  happy-path:
+    name: Login (happy path)
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Login
+        id: login
+        uses: ./
+        with:
+          api-token: ${{ secrets.CRYPTFLARE_TOKEN }}
+
+      - name: Verify outputs are populated
+        run: |
+          set -e
+          echo "token-type:  ${{ steps.login.outputs.token-type }}"
+          echo "org-id:      ${{ steps.login.outputs.org-id }}"
+          echo "org-name:    ${{ steps.login.outputs.org-name }}"
+          echo "org-plan:    ${{ steps.login.outputs.org-plan }}"
+          echo "user-id:     ${{ steps.login.outputs.user-id }}"
+          echo "permissions: ${{ steps.login.outputs.permissions }}"
+
+          test -n "${{ steps.login.outputs.token-type }}" || { echo "::error::token-type empty"; exit 1; }
+          test -n "${{ steps.login.outputs.org-id }}" || { echo "::error::org-id empty"; exit 1; }
+          test -n "${{ steps.login.outputs.org-name }}" || { echo "::error::org-name empty"; exit 1; }
+          test -n "${{ steps.login.outputs.org-plan }}" || { echo "::error::org-plan empty"; exit 1; }
+          case "${{ steps.login.outputs.token-type }}" in
+            service|access) ;;
+            *) echo "::error::token-type must be 'service' or 'access', got '${{ steps.login.outputs.token-type }}'"; exit 1 ;;
+          esac
+
+      - name: Verify env vars exported to subsequent steps
+        run: |
+          set -e
+          test -n "$CRYPTFLARE_TOKEN" || { echo "::error::CRYPTFLARE_TOKEN not exported"; exit 1; }
+          test -n "$CRYPTFLARE_API_URL" || { echo "::error::CRYPTFLARE_API_URL not exported"; exit 1; }
+          echo "CRYPTFLARE_API_URL=$CRYPTFLARE_API_URL"
+          # Token value itself is masked - never echo it.
+
+  no-export:
+    name: Login (export-env false)
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Login with export-env disabled
+        id: login
+        uses: ./
+        with:
+          api-token: ${{ secrets.CRYPTFLARE_TOKEN }}
+          export-env: 'false'
+
+      - name: Verify outputs still populated
+        run: |
+          test -n "${{ steps.login.outputs.org-id }}" || { echo "::error::org-id empty"; exit 1; }
+
+      - name: Verify env vars NOT exported
+        run: |
+          if [ -n "$CRYPTFLARE_TOKEN" ]; then
+            echo "::error::CRYPTFLARE_TOKEN should NOT be set when export-env is false"
+            exit 1
+          fi
+          if [ -n "$CRYPTFLARE_API_URL" ]; then
+            echo "::error::CRYPTFLARE_API_URL should NOT be set when export-env is false"
+            exit 1
+          fi
+          echo "Confirmed: env vars not exported"
+
+  bad-token:
+    name: Login (bad tokens rejected)
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Login with malformed token (must fail)
+        id: bad-prefix
+        continue-on-error: true
+        uses: ./
+        with:
+          api-token: 'notacryptflaretoken'
+
+      - name: Verify malformed-token step failed
+        run: |
+          if [ "${{ steps.bad-prefix.outcome }}" != "failure" ]; then
+            echo "::error::Login should have failed with a malformed token, got outcome '${{ steps.bad-prefix.outcome }}'"
+            exit 1
+          fi
+          echo "Confirmed: malformed token rejected"
+
+      - name: Login with syntactically valid but unknown token (must fail)
+        id: bad-auth
+        continue-on-error: true
+        uses: ./
+        with:
+          api-token: 'cf_smoketest_definitely_not_a_real_token_0123456789'
+
+      - name: Verify unknown-token step failed
+        run: |
+          if [ "${{ steps.bad-auth.outcome }}" != "failure" ]; then
+            echo "::error::Login should have failed with an unknown token, got outcome '${{ steps.bad-auth.outcome }}'"
+            exit 1
+          fi
+          echo "Confirmed: unknown token rejected by API"
