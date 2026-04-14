@@ -1,0 +1,22 @@
+{
+  "name": "@cryptflare-actions/get-secrets",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Get secrets action - fetches CryptFlare secrets and injects them into the workflow.",
+  "type": "module",
+  "scripts": {
+    "build": "ncc build src/index.ts -o dist --source-map --license licenses.txt",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "echo 'no lint yet'",
+    "test": "echo 'no tests yet'"
+  },
+  "dependencies": {
+    "@actions/core": "^3.0.0",
+    "@cryptflare-actions/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "@vercel/ncc": "^0.38.4",
+    "typescript": "^6.0.2"
+  }
+}

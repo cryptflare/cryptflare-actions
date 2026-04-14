@@ -1,0 +1,55 @@
+name: 'CryptFlare Get Secrets'
+description: 'Fetch secrets from CryptFlare and inject them into the workflow as env vars or a file.'
+author: 'CryptFlare'
+branding:
+  icon: 'key'
+  color: 'purple'
+
+inputs:
+  api-token:
+    description: 'CryptFlare service token or access token (prefix cf_). Defaults to the CRYPTFLARE_TOKEN env var exported by the login action.'
+    required: false
+    default: ''
+  api-url:
+    description: 'CryptFlare API base URL. Defaults to CRYPTFLARE_API_URL env var, then https://api.cryptflare.com.'
+    required: false
+    default: ''
+  org-id:
+    description: 'Organisation ID. Defaults to CRYPTFLARE_ORG_ID env var (exported by login), otherwise resolved via /v1/auth/whoami.'
+    required: false
+    default: ''
+  workspace:
+    description: 'Workspace ID to fetch secrets from.'
+    required: true
+  environment:
+    description: 'Environment ID within the workspace.'
+    required: true
+  keys:
+    description: 'Comma or newline separated list of secret keys to fetch. Keys are case-sensitive.'
+    required: true
+  output:
+    description: 'Output format - env (default, export as env vars), dotenv (write KEY=value lines to output-path), json (write a JSON object to output-path).'
+    required: false
+    default: 'env'
+  output-path:
+    description: 'Destination path for dotenv or json output. Required when output is dotenv or json. Ignored when output is env.'
+    required: false
+    default: ''
+  prefix:
+    description: 'String prepended to env var names when output is env. Useful to avoid collisions (e.g. "CF_" turns DATABASE_URL into CF_DATABASE_URL).'
+    required: false
+    default: ''
+  fail-on-missing:
+    description: 'Fail the step if any requested key does not exist in the workspace/environment. Set to "false" to skip missing keys with a warning.'
+    required: false
+    default: 'true'
+
+outputs:
+  keys:
+    description: 'Comma-separated list of secret keys that were fetched successfully.'
+  count:
+    description: 'Number of secrets fetched.'
+
+runs:
+  using: 'node24'
+  main: 'dist/index.js'
