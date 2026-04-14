@@ -34,7 +34,9 @@ jobs:
       - name: Validate every action.yml against the GitHub schema
         uses: mpalmer/action-validator@v0.9.0
         with:
-          path: action.yml
+          patterns: |
+            action.yml
+            actions/*/action.yml
 
   commitlint:
     name: Lint commit messages
