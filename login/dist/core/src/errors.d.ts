@@ -13,13 +13,13 @@ export declare function errorMessage(error: unknown): string;
  * so callers (and core.setFailed) can surface actionable messages.
  */
 export declare class CryptflareApiError extends Error {
-  readonly status: number;
-  readonly code: string | undefined;
-  readonly requestId: string | undefined;
-  constructor(params: {
-    status: number;
-    message: string;
-    code?: string | undefined;
-    requestId?: string | undefined;
-  });
+    readonly status: number;
+    readonly code: string | undefined;
+    readonly requestId: string | undefined;
+    constructor(params: {
+        status: number;
+        message: string;
+        code?: string | undefined;
+        requestId?: string | undefined;
+    });
 }

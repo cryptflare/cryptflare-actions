@@ -1,7 +1,7 @@
 export type LoginInputs = {
-  token: string;
-  apiUrl: string;
-  exportEnv: boolean;
+    token: string;
+    apiUrl: string;
+    exportEnv: boolean;
 };
 /**
  * Parses and validates the action's inputs in one place. Throws on invalid

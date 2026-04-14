@@ -1,10 +1,10 @@
 export type ClientOptions = {
-  baseUrl: string;
-  token: string;
-  userAgent?: string;
+    baseUrl: string;
+    token: string;
+    userAgent?: string;
 };
 type RequestOptions = {
-  signal?: AbortSignal;
+    signal?: AbortSignal;
 };
 /**
  * Thin wrapper around native fetch (Node 20+ ships undici) for CryptFlare
@@ -16,11 +16,11 @@ type RequestOptions = {
  * vars). Public surface stays the same so callers do not need to change.
  */
 export declare class CryptflareClient {
-  private readonly baseUrl;
-  private readonly headers;
-  constructor(opts: ClientOptions);
-  get<T>(path: string, options?: RequestOptions): Promise<T>;
-  post<T>(path: string, body: unknown, options?: RequestOptions): Promise<T>;
-  request<T>(method: string, path: string, body: unknown, options?: RequestOptions): Promise<T>;
+    private readonly baseUrl;
+    private readonly headers;
+    constructor(opts: ClientOptions);
+    get<T>(path: string, options?: RequestOptions): Promise<T>;
+    post<T>(path: string, body: unknown, options?: RequestOptions): Promise<T>;
+    request<T>(method: string, path: string, body: unknown, options?: RequestOptions): Promise<T>;
 }
 export {};

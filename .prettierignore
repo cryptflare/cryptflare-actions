@@ -1,0 +1,11 @@
+# Bundled / generated output - never format
+**/dist/
+**/coverage/
+**/node_modules/
+pnpm-lock.yaml
+
+# Husky's binary scripts (pre-commit, commit-msg) are shell, not js
+.husky/_
+
+# Don't reformat the licenses file emitted by ncc
+**/licenses.txt
