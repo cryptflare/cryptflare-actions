@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.1.3](https://github.com/cryptflare/cryptflare-actions/compare/v0.1.2...v0.1.3) (2026-04-14)
+
+
+### Features
+
+* **get-secrets:** add action to fetch and inject CryptFlare secrets ([8417aff](https://github.com/cryptflare/cryptflare-actions/commit/8417aff5d3c49a1fbd32aecad5e6a66851b1fd78))
+* **login:** expose via sub-path and export CRYPTFLARE_ORG_ID ([45610a1](https://github.com/cryptflare/cryptflare-actions/commit/45610a13718cf4a03b0ab85d77b3d8b5da95bd71))
+
+
+### Bug Fixes
+
+* **ci:** bump action runtime to node24 and silence smoke annotations ([f52d338](https://github.com/cryptflare/cryptflare-actions/commit/f52d338fbb91857f8c6a3721252b50b4d8a664f1))
+* **login:** remove ${{ }} expression from action.yml description ([e21e4b1](https://github.com/cryptflare/cryptflare-actions/commit/e21e4b1e743e302bee89f4e72198d899be448837))
+
+
+### Documentation
+
+* **repo:** prefer sub-path form cryptflare-actions/login@v1 in examples ([79e848f](https://github.com/cryptflare/cryptflare-actions/commit/79e848f119cb620c41cd1beea3eb743e3a7d2bf4))
+
 ## [0.1.2](https://github.com/cryptflare/cryptflare-actions/compare/v0.1.1...v0.1.2) (2026-04-14)
 
 
