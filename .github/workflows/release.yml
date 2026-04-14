@@ -29,6 +29,12 @@ jobs:
       - uses: googleapis/release-please-action@v4.4.1
         id: release
         with:
+          # Personal access token with contents:write + pull-requests:write.
+          # Required because the cryptflare org policy blocks the default
+          # GITHUB_TOKEN from creating pull requests, even with explicit
+          # workflow-level permissions. Falls back to GITHUB_TOKEN if the
+          # secret is unset (e.g. when the repo is forked or self-hosted).
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN || secrets.GITHUB_TOKEN }}
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
 
