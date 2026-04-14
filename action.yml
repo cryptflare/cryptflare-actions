@@ -7,7 +7,7 @@ branding:
 
 inputs:
   api-token:
-    description: 'CryptFlare service token or access token (prefix cf_). Prefer passing via ${{ secrets.CRYPTFLARE_TOKEN }}.'
+    description: 'CryptFlare service token or access token (prefix cf_). Pass from a repository secret, e.g. secrets.CRYPTFLARE_TOKEN.'
     required: true
   api-url:
     description: 'CryptFlare API base URL. Override for self-hosted or staging environments.'
