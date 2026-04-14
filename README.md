@@ -22,30 +22,51 @@
 ## Quick start
 
 ```yaml
-- uses: cryptflare/cryptflare-actions@v1
+- uses: cryptflare/cryptflare-actions/login@v1
   with:
     api-token: ${{ secrets.CRYPTFLARE_TOKEN }}
+
+- uses: cryptflare/cryptflare-actions/get-secrets@v1
+  with:
+    workspace: ws_abc123
+    environment: env_prod
+    keys: DATABASE_URL, STRIPE_API_KEY, REDIS_URL
 
 - run: npm run deploy
 ```
 
-That's the minimal flow: log in, then do your job. Subsequent steps inherit `CRYPTFLARE_TOKEN` and `CRYPTFLARE_API_URL` as env vars for any tool that reads them (the CryptFlare CLI, SDK, or later actions in this suite as they ship).
+That's the full two-step flow: log in, fetch secrets, deploy. The login step exports `CRYPTFLARE_TOKEN`, `CRYPTFLARE_API_URL`, and `CRYPTFLARE_ORG_ID` as env vars so every subsequent action picks them up automatically - no need to pass the token more than once per job.
 
-See [login/README.md](./login/README.md) for the full input/output reference, permissions, troubleshooting, and more examples.
+You can also skip the login step and pass the token directly to `get-secrets` if identity info is not needed downstream:
+
+```yaml
+- uses: cryptflare/cryptflare-actions/get-secrets@v1
+  with:
+    api-token: ${{ secrets.CRYPTFLARE_TOKEN }}
+    workspace: ws_abc123
+    environment: env_prod
+    keys: DATABASE_URL
+```
+
+See [login/README.md](./login/README.md) and the action-specific READMEs for the full input/output reference, permissions, troubleshooting, and more examples.
+
+> **Shortcut form:** `uses: cryptflare/cryptflare-actions@v1` (no sub-path) also works and runs the login action. This is what the GitHub Marketplace listing shows by default. The explicit `/login@v1` form is recommended in workflows because it makes the intent obvious alongside other sub-actions like `/get-secrets@v1`.
 
 ## Available actions
 
-| Action                             | Status    | Purpose                                                                         |
-| ---------------------------------- | --------- | ------------------------------------------------------------------------------- |
-| `cryptflare/cryptflare-actions@v1` | available | Login - validate a service or access token, expose identity info to later steps |
-| `.../get-secrets@v1`               | planned   | Fetch secrets and inject into job env or a file                                 |
-| `.../run@v1`                       | planned   | Run a command with secrets injected, nothing persisted to disk                  |
-| `.../set-secret@v1`                | planned   | Create or update a secret from CI                                               |
-| `.../rotate@v1`                    | planned   | Trigger rotation on a key or policy                                             |
-| `.../dynamic-lease@v1`             | planned   | Issue short-lived AWS/Azure/GCP credentials, auto-revoked at job end            |
-| `.../sync-trigger@v1`              | planned   | Kick a sync connection and wait for completion                                  |
-| `.../drift-check@v1`               | planned   | Fail the job if a sync destination has drifted                                  |
-| `.../audit-query@v1`               | planned   | Query audit events - compliance gates in CI                                     |
+All sub-actions are consumed via the sub-path form: `cryptflare/cryptflare-actions/<name>@v1`.
+
+| Action              | Status    | Purpose                                                                                         |
+| ------------------- | --------- | ----------------------------------------------------------------------------------------------- |
+| `/login@v1`         | available | Validate a service or access token, expose identity info to later steps                         |
+| `/get-secrets@v1`   | available | Fetch secrets from a workspace/environment and inject into job env, a .env file, or a JSON file |
+| `/run@v1`           | planned   | Run a command with secrets injected, nothing persisted to disk                                  |
+| `/set-secret@v1`    | planned   | Create or update a secret from CI                                                               |
+| `/rotate@v1`        | planned   | Trigger rotation on a key or policy                                                             |
+| `/dynamic-lease@v1` | planned   | Issue short-lived AWS/Azure/GCP credentials, auto-revoked at job end                            |
+| `/sync-trigger@v1`  | planned   | Kick a sync connection and wait for completion                                                  |
+| `/drift-check@v1`   | planned   | Fail the job if a sync destination has drifted                                                  |
+| `/audit-query@v1`   | planned   | Query audit events - compliance gates in CI                                                     |
 
 Each shipped action has its own README in its folder with full documentation.
 

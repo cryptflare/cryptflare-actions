@@ -9,7 +9,9 @@
 
 Authenticate to [CryptFlare](https://cryptflare.com) and expose caller identity to later workflow steps. Supports both **service tokens** (org-level, no user) and **access tokens** (workspace-scoped, user-linked).
 
-This is the default action in the `cryptflare-actions` suite. It validates a token against `GET /v1/auth/whoami`, masks the value in logs, and optionally exports `CRYPTFLARE_TOKEN` / `CRYPTFLARE_API_URL` as env vars so downstream actions pick them up automatically.
+This is the default action in the `cryptflare-actions` suite. It validates a token against `GET /v1/auth/whoami`, masks the value in logs, and optionally exports `CRYPTFLARE_TOKEN`, `CRYPTFLARE_API_URL`, and `CRYPTFLARE_ORG_ID` as env vars so downstream actions pick them up automatically.
+
+> Consumed as `cryptflare/cryptflare-actions/login@v1`. The shortcut `cryptflare/cryptflare-actions@v1` (no sub-path) also works and runs the same action - that's the form the GitHub Marketplace listing shows by default. Prefer the explicit `/login@v1` form in workflows because it makes the intent obvious alongside other sub-actions like `/get-secrets@v1`.
 
 ---
 
@@ -29,7 +31,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Log in to CryptFlare
-        uses: cryptflare/cryptflare-actions@v1
+        uses: cryptflare/cryptflare-actions/login@v1
         with:
           api-token: ${{ secrets.CRYPTFLARE_TOKEN }}
 
@@ -45,7 +47,7 @@ That's the entire flow. Store your token as a GitHub Actions secret named `CRYPT
 ```yaml
 - name: Log in to CryptFlare
   id: cryptflare
-  uses: cryptflare/cryptflare-actions@v1
+  uses: cryptflare/cryptflare-actions/login@v1
   with:
     api-token: ${{ secrets.CRYPTFLARE_TOKEN }}
 
@@ -57,7 +59,7 @@ That's the entire flow. Store your token as a GitHub Actions secret named `CRYPT
 ### Opt out of env var exports (security-conscious)
 
 ```yaml
-- uses: cryptflare/cryptflare-actions@v1
+- uses: cryptflare/cryptflare-actions/login@v1
   with:
     api-token: ${{ secrets.CRYPTFLARE_TOKEN }}
     export-env: 'false'
@@ -68,7 +70,7 @@ When `export-env` is `false`, the token is validated and outputs are set, but no
 ### Point at a self-hosted or staging API
 
 ```yaml
-- uses: cryptflare/cryptflare-actions@v1
+- uses: cryptflare/cryptflare-actions/login@v1
   with:
     api-token: ${{ secrets.CRYPTFLARE_STAGING_TOKEN }}
     api-url: https://api.staging.cryptflare.com
@@ -78,7 +80,7 @@ When `export-env` is `false`, the token is validated and outputs are set, but no
 
 ```yaml
 - id: cryptflare
-  uses: cryptflare/cryptflare-actions@v1
+  uses: cryptflare/cryptflare-actions/login@v1
   with:
     api-token: ${{ secrets.CRYPTFLARE_TOKEN }}
 
