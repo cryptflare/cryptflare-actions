@@ -35,7 +35,10 @@ module.exports = {
       ],
     ],
     'scope-empty': [2, 'never'],
-    'subject-case': [2, 'always', ['sentence-case', 'lower-case']],
+    // Disabled: acronyms like CI, API, TLS, AWS, HTTP are common in commit
+    // subjects and fighting commitlint over them is wasted energy. The
+    // scope-enum + type-enum + length limits already give us structure.
+    'subject-case': [0],
     'subject-max-length': [2, 'always', 100],
     'body-max-line-length': [2, 'always', 120],
   },
