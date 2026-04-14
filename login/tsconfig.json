@@ -1,0 +1,15 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    // rootDir points at the parent workspace so @cryptflare-actions/core
+    // source files (imported via its package.json main: ./src/index.ts)
+    // are inside the compilation root. Without this, ncc's embedded tsc
+    // fails with TS6059 when it pulls core source into the program.
+    "rootDir": "..",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "types": ["node"]
+  },
+  "include": ["src/**/*"]
+}

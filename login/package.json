@@ -1,0 +1,22 @@
+{
+  "name": "@cryptflare-actions/login",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Login action - validates a CryptFlare token and exports identity to the job.",
+  "type": "module",
+  "scripts": {
+    "build": "ncc build src/index.ts -o dist --source-map --license licenses.txt",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "echo 'no lint yet'",
+    "test": "echo 'no tests yet'"
+  },
+  "dependencies": {
+    "@actions/core": "^1.11.1",
+    "@cryptflare-actions/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "@vercel/ncc": "^0.38.1",
+    "typescript": "^5.5.4"
+  }
+}

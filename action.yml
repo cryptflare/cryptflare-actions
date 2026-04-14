@@ -1,0 +1,37 @@
+name: 'CryptFlare'
+description: 'Authenticate to CryptFlare and expose identity info to later workflow steps. Supports service tokens and access tokens.'
+author: 'CryptFlare'
+branding:
+  icon: 'lock'
+  color: 'purple'
+
+inputs:
+  api-token:
+    description: 'CryptFlare service token or access token (prefix cf_). Prefer passing via ${{ secrets.CRYPTFLARE_TOKEN }}.'
+    required: true
+  api-url:
+    description: 'CryptFlare API base URL. Override for self-hosted or staging environments.'
+    required: false
+    default: 'https://api.cryptflare.com'
+  export-env:
+    description: 'Export CRYPTFLARE_TOKEN and CRYPTFLARE_API_URL as env vars for later steps. Set to "false" to only populate outputs.'
+    required: false
+    default: 'true'
+
+outputs:
+  token-type:
+    description: 'The token type - either "service" (org-level) or "access" (workspace-scoped, user-linked).'
+  org-id:
+    description: 'Organisation ID the token is authenticated to.'
+  org-name:
+    description: 'Organisation name.'
+  org-plan:
+    description: 'Organisation billing plan.'
+  user-id:
+    description: 'User ID that owns the token. Empty for service tokens.'
+  permissions:
+    description: 'Comma-separated list of permissions (scopes) granted to the token.'
+
+runs:
+  using: 'node20'
+  main: 'login/dist/index.js'
