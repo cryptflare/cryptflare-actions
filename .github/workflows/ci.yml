@@ -10,12 +10,20 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
+# Force all JavaScript actions to run on Node 24 ahead of GitHub's
+# June 2026 default flip. Covers reviewdog/action-actionlint,
+# mpalmer/action-validator, pnpm/action-setup, actions/setup-node,
+# actions/upload-artifact, etc. Remove once every action in here
+# has bumped its own runtime.
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+
 jobs:
   lint-action:
     name: Lint action.yml and workflows
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Run actionlint
         uses: reviewdog/action-actionlint@v1
@@ -24,7 +32,7 @@ jobs:
           fail_level: error
 
       - name: Validate every action.yml against the GitHub schema
-        uses: mpalmer/action-validator@v0.6.0
+        uses: mpalmer/action-validator@v0.9.0
         with:
           path: action.yml
 
@@ -33,13 +41,13 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version-file: .node-version
           cache: pnpm
@@ -57,11 +65,11 @@ jobs:
     name: Build & verify dist
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version-file: .node-version
           cache: pnpm
@@ -89,11 +97,11 @@ jobs:
     name: Unit tests (vitest)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version-file: .node-version
           cache: pnpm
@@ -108,7 +116,7 @@ jobs:
 
       - name: Upload coverage report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: coverage-core
           path: core/coverage/

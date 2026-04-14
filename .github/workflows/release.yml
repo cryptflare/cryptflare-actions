@@ -8,6 +8,13 @@ permissions:
   contents: write
   pull-requests: write
 
+# Force all JavaScript actions to run on Node 24 ahead of GitHub's
+# June 2026 default flip. Silences the Node 20 deprecation warning
+# from release-please-action and any other js-based action in here.
+# Remove once every action in this workflow has bumped its own runtime.
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+
 jobs:
   release-please:
     name: Release please
@@ -19,7 +26,7 @@ jobs:
       minor: ${{ steps.release.outputs.minor }}
       patch: ${{ steps.release.outputs.patch }}
     steps:
-      - uses: googleapis/release-please-action@v4
+      - uses: googleapis/release-please-action@v4.4.1
         id: release
         with:
           config-file: release-please-config.json
@@ -31,7 +38,7 @@ jobs:
     if: needs.release-please.outputs.release_created == 'true'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}

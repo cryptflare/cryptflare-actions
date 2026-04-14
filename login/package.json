@@ -11,12 +11,12 @@
     "test": "echo 'no tests yet'"
   },
   "dependencies": {
-    "@actions/core": "^1.11.1",
+    "@actions/core": "^3.0.0",
     "@cryptflare-actions/core": "workspace:*"
   },
   "devDependencies": {
-    "@types/node": "^20.14.0",
-    "@vercel/ncc": "^0.38.1",
-    "typescript": "^5.5.4"
+    "@types/node": "^25.6.0",
+    "@vercel/ncc": "^0.38.4",
+    "typescript": "^6.0.2"
   }
 }
