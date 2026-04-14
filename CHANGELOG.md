@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.2](https://github.com/cryptflare/cryptflare-actions/compare/v0.1.1...v0.1.2) (2026-04-14)
+
+
+### Bug Fixes
+
+* **ci:** exclude release-please files from prettier and update validator input ([fde2b43](https://github.com/cryptflare/cryptflare-actions/commit/fde2b43346a02c79344112f9d4342f8d629f3d0f))
+* **repo:** exclude CHANGELOG.md and release-please manifest from prettier ([879ec18](https://github.com/cryptflare/cryptflare-actions/commit/879ec18b7349b136c0c0ee2dbcd12a1fb9f37df5))
+
 ## [0.1.1](https://github.com/cryptflare/cryptflare-actions/compare/v0.1.0...v0.1.1) (2026-04-14)
 
 
